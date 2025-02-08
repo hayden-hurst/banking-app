@@ -1,14 +1,8 @@
-# Compiled class file
+# Compiled class files
 *.class
 
-# Log file
+# Log files
 *.log
-
-# BlueJ files
-*.ctxt
-
-# Mobile Tools for Java (J2ME)
-.mtj.tmp/
 
 # Package Files #
 *.jar
@@ -19,20 +13,19 @@
 *.tar.gz
 *.rar
 
-# Virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
+# Virtual machine crash logs
 hs_err_pid*
 replay_pid*
 
-# Maven Wrapper
+# Maven Wrapper (only keeping necessary files)
 !.mvn/wrapper/maven-wrapper.jar
-!**/src/main/**/target/
-!**/src/test/**/target/
+.mvn/wrapper/
+mvnw
+mvnw.cmd
 
 # Build directories (Maven, Gradle, etc.)
 target/
 build/
-**/target/
-**/build/
 
 # IntelliJ IDEA
 .idea/
@@ -40,21 +33,12 @@ build/
 *.iml
 *.ipr
 
-# Spring Tool Suite (STS)
+# Spring Tool Suite (STS) [Removed if you don’t use STS]
 .apt_generated
 .classpath
 .factorypath
 .project
-.settings
-.springBeans
-.sts4-cache
+.settings/
 
-# NetBeans
-/nbproject/private/
-/nbbuild/
-/dist/
-/nbdist/
-/.nb-gradle/
-
-# VS Code
+# VS Code [Remove if not needed]
 .vscode/
