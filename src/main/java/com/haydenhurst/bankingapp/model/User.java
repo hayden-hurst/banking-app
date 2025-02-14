@@ -1,9 +1,9 @@
 package com.haydenhurst.bankingapp.model;
 
-import com.haydenhurst.bankingapp.enums.AccountStatus;
 import com.haydenhurst.bankingapp.enums.Role;
+import com.haydenhurst.bankingapp.enums.UserAccountStatus;
 import jakarta.persistence.*;
-
+import org.springframework.cglib.core.Local;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Set;
@@ -11,7 +11,7 @@ import java.util.Set;
 @Entity
 @Table(name = "users")
 public class User {
-    // move this to controller layer -> private static final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+    // move this to service layer -> private static final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
     // ==================================================
     // Field Declarations
@@ -46,7 +46,7 @@ public class User {
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private AccountStatus status; // ACTIVE, SUSPENDED, CLOSED
+    private UserAccountStatus status; // ACTIVE, SUSPENDED, CLOSED
 
         // Security & Banking Features //
     @Column(nullable = false)
@@ -60,33 +60,53 @@ public class User {
 
     private LocalDateTime lastLogin;
 
+    // ADMINS will be redirected to their own dashboard upon login,
+    // they should have access to review flagged accounts,
+    // view user and bank account information like transaction history,
+    // and also have the ability to manage the user and bank account status
+    // they will NOT be able to edit transaction history or any other account information.
     @Column(nullable = false)
-    @ElementCollection(fetch = FetchType.EAGER)
     @Enumerated(EnumType.STRING)
-    private Set<Role> roles;
+    private Role roles; // CUSTOMER, ADMIN
 
     @Column(nullable = true)
-    private String passwordResetToken; // temp token for pass recovery
-
+    private String passwordResetToken; // temp token for pass recovery (these will also be hashed before being stored on the database)
 
     // ==================================================
     // Constructors
     // ==================================================
     public User(){
+        this.status = UserAccountStatus.ACTIVE;
+        this.roles = Role.CUSTOMER;
         this.accountNonLocked = true;
         this.twoFactorAuthEnabled = false;
         this.failedLoginAttempts = 0;
+    }
+    public User(String email, String password, String fullName, String phoneNumber, LocalDate dob, String address, Set<Role> roles) {
+        this.email = email;
+        this.password = password;
+        this.fullName = fullName;
+        this.phoneNumber = phoneNumber;
+        this.dob = dob;
+        this.address = address;
+
     }
 
     // ==================================================
     // Get / Set
     // ==================================================
+        // Essential User Info //
     public String getEmail() {
         return email;
     }
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public void setPassword(String hashedPassword) {
+        this.password = hashedPassword;
+        // needs to be hashed in service layer -> encoder.encode(rawPassword);
     }
 
     public String getFullName() {
@@ -121,15 +141,16 @@ public class User {
         this.address = address;
     }
 
-    public AccountStatus getStatus() {
+    public UserAccountStatus getStatus() {
         return status;
     }
 
-    public void setStatus(AccountStatus status) {
-        // move this to controller layer -> if (status == AccountStatus.CLOSED){System.out.print("cannot change account status if CLOSED");return;}
+    public void setStatus(UserAccountStatus status) {
         this.status = status;
     }
+    // move this to service layer -> if (status == AccountStatus.CLOSED){System.out.print("cannot change account status if CLOSED");return;}
 
+        // Security & Banking Features //
     public boolean isAccountNonLocked() {
         return accountNonLocked;
     }
@@ -168,10 +189,6 @@ public class User {
 
     public void setPasswordResetToken(String passwordResetToken) {
         this.passwordResetToken = passwordResetToken;
-    }
-
-    public void setPassword(String rawPassword) {
-        // needs to be done in controller layer -> encoder.encode(rawPassword);
     }
 
     // ==================================================

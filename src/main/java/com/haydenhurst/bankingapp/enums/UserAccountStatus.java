@@ -1,6 +1,6 @@
 package com.haydenhurst.bankingapp.enums;
 
-public enum AccountStatus {
+public enum UserAccountStatus {
     ACTIVE,
     SUSPENDED,
     CLOSED
