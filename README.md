@@ -65,9 +65,11 @@ mvn spring-boot:run
 ## Future Improvements
 
 - Add multi-factor authentication (MFA) for enhanced security.  
-- Implement scheduled transactions.  
-- Support for multiple currencies.  
+- Implement scheduled transactions.  (recurring payments such as subscriptions)
+- Support for multiple currencies. (will use an api such as currency layer for accurate money conversions)
 - Add an admin dashboard for user management.
+- IP tracking for fraud detection and for account protection (e.g., login from different location/ip must be approved before authorizing)
+- Device login detection (e.g., user must approve login on different device)
 
 ---
 
