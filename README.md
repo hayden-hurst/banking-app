@@ -70,6 +70,7 @@ mvn spring-boot:run
 - Add an admin dashboard for user management.
 - IP tracking for fraud detection and for account protection (e.g., login from different location/ip must be approved before authorizing)
 - Device login detection (e.g., user must approve login on different device)
+- Implement NoSQL for caching, analytics, and personalization.
 
 ---
 
