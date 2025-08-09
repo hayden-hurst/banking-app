@@ -1,4 +1,4 @@
-# Banking App (Personal Project)
+# Banking App
 
 A full-stack banking application built with **Spring Boot** and **PostgreSQL**, featuring secure authentication, transaction management, and account tracking. This project showcases both backend development (RESTful APIs, database interactions, security) and frontend design/development, providing a seamless user experience.
 
