@@ -1,6 +1,6 @@
 # Banking App (Personal Project)
 
-A **Spring Boot-powered** banking application with **PostgreSQL** integration, providing secure authentication, transaction management, and account tracking. Designed as a **personal project** to showcase backend development skills, database interactions, and RESTful API implementation.
+A full-stack banking application built with **Spring Boot** and **PostgreSQL**, featuring secure authentication, transaction management, and account tracking. This project showcases both backend development (RESTful APIs, database interactions, security) and frontend design/development, providing a seamless user experience.
 
 ---
 
@@ -16,6 +16,7 @@ A **Spring Boot-powered** banking application with **PostgreSQL** integration, p
 
 ## Tech Stack
 
+- **Frontend:** Javascript, HTML, CSS
 - **Backend:** Java 17, Spring Boot, Spring Security
 - **Database:** PostgreSQL
 - **Build Tool:** Maven
@@ -64,9 +65,12 @@ mvn spring-boot:run
 ## Future Improvements
 
 - Add multi-factor authentication (MFA) for enhanced security.  
-- Implement scheduled transactions.  
-- Support for multiple currencies.  
+- Implement scheduled transactions.  (recurring payments such as subscriptions)
+- Support for multiple currencies. (will use an api such as currency layer for accurate money conversions)
 - Add an admin dashboard for user management.
+- IP tracking for fraud detection and for account protection (e.g., login from different location/ip must be approved before authorizing)
+- Device login detection (e.g., user must approve login on different device)
+- Implement NoSQL for caching, analytics, and personalization.
 
 ---
 
