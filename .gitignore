@@ -18,10 +18,10 @@ hs_err_pid*
 replay_pid*
 
 # Maven Wrapper (only keeping necessary files)
-!.mvn/wrapper/maven-wrapper.jar
-.mvn/wrapper/
-mvnw
-mvnw.cmd
+!backend/.mvn/wrapper/maven-wrapper.jar
+backend/.mvn/wrapper/
+backend/mvnw
+backend/mvnw.cmd
 
 # Build directories (Maven, Gradle, etc.)
 target/

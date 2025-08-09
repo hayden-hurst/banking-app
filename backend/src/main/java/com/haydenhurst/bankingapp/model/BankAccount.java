@@ -84,69 +84,29 @@ public class BankAccount {
     // ==================================================
     // Get / Set
     // ==================================================
-    public String getAccountNumber() {
-        return accountNumber;
-    }
+    public String getAccountNumber() { return accountNumber; }
+    public void setAccountNumber(String accountNumber) { this.accountNumber = accountNumber; }
 
-    public void setAccountNumber(String accountNumber) {
-        this.accountNumber = accountNumber;
-    }
+    public String getAccountNickname() { return accountNickname; }
+    public void setAccountNickname(String accountNickname) { this.accountNickname = accountNickname; }
 
-    public String getAccountNickname() {
-        return accountNickname;
-    }
+    public BigDecimal getBalance() { return balance; }
+    public void setBalance(BigDecimal balance) { this.balance = balance; }
 
-    public void setAccountNickname(String accountNickname) {
-        this.accountNickname = accountNickname;
-    }
+    public BankAccountType getAccountType() { return bankAccountType; }
+    public void setAccountType(BankAccountType bankAccountType) { this.bankAccountType = bankAccountType; }
 
-    public BigDecimal getBalance() {
-        return balance;
-    }
+    public String getCurrency() { return currency; }
+    public void setCurrency(String currency) { this.currency = currency; }
 
-    public void setBalance(BigDecimal balance) {
-        this.balance = balance;
-    }
+    public BankAccountStatus getStatus() { return status; }
+    public void setStatus(BankAccountStatus status) { this.status = status; }
 
-    public BankAccountType getAccountType() {
-        return bankAccountType;
-    }
+    public BigDecimal getInterestRate() { return interestRate; }
+    public void setInterestRate(BigDecimal interestRate) { this.interestRate = interestRate; }
 
-    public void setAccountType(BankAccountType bankAccountType) {
-        this.bankAccountType = bankAccountType;
-    }
-
-    public String getCurrency() {
-        return currency;
-    }
-
-    public void setCurrency(String currency) {
-        this.currency = currency;
-    }
-
-    public BankAccountStatus getStatus() {
-        return status;
-    }
-
-    public void setStatus(BankAccountStatus status) {
-        this.status = status;
-    }
-
-    public BigDecimal getInterestRate() {
-        return interestRate;
-    }
-
-    public void setInterestRate(BigDecimal interestRate) {
-        this.interestRate = interestRate;
-    }
-
-    public Set<Transaction> getTransactions() {
-        return transactions;
-    }
-
-    public void setTransactions(Set<Transaction> transactions) {
-        this.transactions = transactions;
-    }
+    public Set<Transaction> getTransactions() { return transactions; }
+    public void setTransactions(Set<Transaction> transactions) { this.transactions = transactions; }
 
     // ==================================================
     // Lifecycle Callback Methods

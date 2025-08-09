@@ -22,7 +22,7 @@ public class Transaction {
     @Column(length = 255, nullable = false)
     private String description;
 
-    @Column(nullable = false)
+    @Column(nullable = false, updatable = false)
     private LocalDateTime timestamp;
 
     @ManyToOne // establish relation with BankAccount
@@ -44,25 +44,15 @@ public class Transaction {
     // ==================================================
     // Gets ( once values are set there is no editing )
     // ==================================================
-    public Long getId() {
-        return id;
-    }
+    public Long getId() { return id; }
 
-    public BankAccount getBankAccount() {
-        return bankAccount;
-    }
+    public BankAccount getBankAccount() { return bankAccount; }
 
-    public BigDecimal getAmount() {
-        return amount;
-    }
+    public BigDecimal getAmount() { return amount; }
 
-    public String getDescription() {
-        return description;
-    }
+    public String getDescription() { return description; }
 
-    public LocalDateTime getTimestamp() {
-        return timestamp;
-    }
+    public LocalDateTime getTimestamp() { return timestamp; }
 
     // ==================================================
     // Lifecycle Callback Methods

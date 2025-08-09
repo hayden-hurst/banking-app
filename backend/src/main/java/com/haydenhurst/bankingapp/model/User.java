@@ -11,7 +11,6 @@ import java.util.Set;
 @Entity
 @Table(name = "users")
 public class User {
-    // move this to service layer -> private static final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
     // ==================================================
     // Field Declarations
@@ -28,13 +27,14 @@ public class User {
     private String password; // hashed with BCrypt
 
     @Column(nullable = false)
-    private String fullName;
+    private String fullName; // we will have separate input fields for first, middle, and lastname that combine into this single fullName field for easy access...
+    // this will be verified via kyc through some sort of id...
 
     @Column(nullable = false, unique = true)
     private String phoneNumber;
 
     @Column(nullable = false)
-    private LocalDate dob;
+    private LocalDate dob; // date of birth
 
     @Column(nullable = false)
     private String address;
@@ -48,6 +48,10 @@ public class User {
     @Enumerated(EnumType.STRING)
     private UserAccountStatus status; // ACTIVE, SUSPENDED, CLOSED
 
+        // Relations //
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Kyc kyc; // 'know your customer' data
+
         // Security & Banking Features //
     @Column(nullable = false)
     private boolean accountNonLocked; // prevents login if account is locked
@@ -55,10 +59,14 @@ public class User {
     @Column(nullable = false)
     private boolean twoFactorAuthEnabled;
 
+    // add biometric Auth such as face recognition or other forms of auth
+
     @Column(nullable = false)
     private int failedLoginAttempts;
 
     private LocalDateTime lastLogin;
+
+    // add security questions for password reset, as well as ssn, account number, and other forms of verification.
 
     // ADMINS will be redirected to their own dashboard upon login,
     // they should have access to review flagged accounts,
@@ -67,7 +75,7 @@ public class User {
     // they will NOT be able to edit transaction history or any other account information.
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private Role roles; // CUSTOMER, ADMIN
+    private Role roles; // CUSTOMER, ADMIN, TELLER
 
     @Column(nullable = true)
     private String passwordResetToken; // temp token for pass recovery (these will also be hashed before being stored on the database)
@@ -82,15 +90,6 @@ public class User {
         this.twoFactorAuthEnabled = false;
         this.failedLoginAttempts = 0;
     }
-    public User(String email, String password, String fullName, String phoneNumber, LocalDate dob, String address, Set<Role> roles) {
-        this.email = email;
-        this.password = password;
-        this.fullName = fullName;
-        this.phoneNumber = phoneNumber;
-        this.dob = dob;
-        this.address = address;
-
-    }
 
     // ==================================================
     // Get / Set
@@ -99,97 +98,43 @@ public class User {
     public String getEmail() {
         return email;
     }
-
     public void setEmail(String email) {
         this.email = email;
     }
 
-    public void setPassword(String hashedPassword) {
-        this.password = hashedPassword;
-        // needs to be hashed in service layer -> encoder.encode(rawPassword);
-    }
+    public void setPassword(String hashedPassword) { this.password = hashedPassword; } // hashed in service layer
 
-    public String getFullName() {
-        return fullName;
-    }
+    public String getFullName() { return fullName; }
+    public void setFullName(String fullName) { this.fullName = fullName; }
 
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
-    }
+    public String getPhoneNumber() { return phoneNumber; }
+    public void setPhoneNumber(String phoneNumber) { this.phoneNumber = phoneNumber; }
 
-    public String getPhoneNumber() {
-        return phoneNumber;
-    }
+    public LocalDate getDOB() { return dob; }
+    public void setDOB(LocalDate dob) { this.dob = dob; }
 
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
-    }
+    public String getAddress() { return address; }
+    public void setAddress(String address) { this.address = address; }
 
-    public LocalDate getDob() {
-        return dob;
-    }
-
-    public void setDob(LocalDate dob) {
-        this.dob = dob;
-    }
-
-    public String getAddress() {
-        return address;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
-    }
-
-    public UserAccountStatus getStatus() {
-        return status;
-    }
-
-    public void setStatus(UserAccountStatus status) {
-        this.status = status;
-    }
+    public UserAccountStatus getStatus() { return status; }
+    public void setStatus(UserAccountStatus status) { this.status = status; }
     // move this to service layer -> if (status == AccountStatus.CLOSED){System.out.print("cannot change account status if CLOSED");return;}
 
         // Security & Banking Features //
-    public boolean isAccountNonLocked() {
-        return accountNonLocked;
-    }
+    public boolean isAccountNonLocked() { return accountNonLocked; }
+    public void setAccountNonLocked(boolean accountNonLocked) { this.accountNonLocked = accountNonLocked; }
 
-    public void setAccountNonLocked(boolean accountNonLocked) {
-        this.accountNonLocked = accountNonLocked;
-    }
+    public boolean isTwoFactorAuthEnabled() { return twoFactorAuthEnabled; }
+    public void setTwoFactorAuthEnabled(boolean twoFactorAuthEnabled) { this.twoFactorAuthEnabled = twoFactorAuthEnabled; }
 
-    public boolean isTwoFactorAuthEnabled() {
-        return twoFactorAuthEnabled;
-    }
+    public int getFailedLoginAttempts() { return failedLoginAttempts; }
+    public void setFailedLoginAttempts(int failedLoginAttempts) { this.failedLoginAttempts = failedLoginAttempts; }
 
-    public void setTwoFactorAuthEnabled(boolean twoFactorAuthEnabled) {
-        this.twoFactorAuthEnabled = twoFactorAuthEnabled;
-    }
+    public LocalDateTime getLastLogin() { return lastLogin; }
+    public void setLastLogin(LocalDateTime lastLogin) { this.lastLogin = lastLogin; }
 
-    public int getFailedLoginAttempts() {
-        return failedLoginAttempts;
-    }
-
-    public void setFailedLoginAttempts(int failedLoginAttempts) {
-        this.failedLoginAttempts = failedLoginAttempts;
-    }
-
-    public LocalDateTime getLastLogin() {
-        return lastLogin;
-    }
-
-    public void setLastLogin(LocalDateTime lastLogin) {
-        this.lastLogin = lastLogin;
-    }
-
-    public String getPasswordResetToken() {
-        return passwordResetToken;
-    }
-
-    public void setPasswordResetToken(String passwordResetToken) {
-        this.passwordResetToken = passwordResetToken;
-    }
+    public String getPasswordResetToken() { return passwordResetToken; }
+    public void setPasswordResetToken(String passwordResetToken) { this.passwordResetToken = passwordResetToken; }
 
     // ==================================================
     // Utility Methods
