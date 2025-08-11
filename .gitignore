@@ -43,5 +43,5 @@ build/
 # VS Code [Remove if not needed]
 .vscode/
 
-# app vars
+# backend vars
 backend/src/main/resources/application.properties
