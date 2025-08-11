@@ -35,12 +35,16 @@ git clone https://github.com/hayden-hurst/banking-app.git
 cd banking-app
 ```
 
-### **2** Configure the Database
+### **2** Configure the Application
 Edit the `src/main/resources/application.properties` file and set your PostgreSQL credentials:
 ```properties
 spring.datasource.url=jdbc:postgresql://localhost:5432/banking_app
 spring.datasource.username=your_username
 spring.datasource.password=your_password
+```
+Make sure to also edit JWT secret (must be >= 32 chars):
+```properties
+jwt.secret=superSecretKeyThatIsExactly32Chars!!
 ```
 
 ### **3** Run the Application
