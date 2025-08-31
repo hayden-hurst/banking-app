@@ -53,7 +53,6 @@ public class User implements UserDetails {
     private LocalDateTime updatedAt;
 
     @Column(nullable = false)
-    @ElementCollection(fetch = FetchType.EAGER)
     @Enumerated(EnumType.STRING)
     private UserAccountStatus status; // ACTIVE, SUSPENDED, CLOSED
 
@@ -82,6 +81,7 @@ public class User implements UserDetails {
     // view user and bank account information like transaction history,
     // and also have the ability to manage the user and bank account status
     // they will NOT be able to edit transaction history or any other account information.
+    // make system that allows you to create admin accounts for the banking app
     @Column(nullable = false)
     @ElementCollection(fetch = FetchType.EAGER)
     @Enumerated(EnumType.STRING)
@@ -129,7 +129,6 @@ public class User implements UserDetails {
 
     public UserAccountStatus getStatus() { return status; }
     public void setStatus(UserAccountStatus status) { this.status = status; }
-    // move this to service layer -> if (status == AccountStatus.CLOSED){System.out.print("cannot change account status if CLOSED");return;}
 
         // Security & Banking Features //
     public void setAccountNonLocked(boolean accountNonLocked) { this.accountNonLocked = accountNonLocked; }

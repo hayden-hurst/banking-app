@@ -22,22 +22,14 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<String> registerUser(@RequestBody SignupRequest signupRequest) {
-        try{
-            String response = authService.registerUser(signupRequest);
-            return ResponseEntity.ok("User registered successfully.");
-        } catch (IllegalArgumentException ex) {
-            return ResponseEntity.status(401).body(ex.getMessage());
-        }
+        String response = authService.registerUser(signupRequest);
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/login")
     public ResponseEntity<String> loginUser(@RequestBody LoginRequest loginRequest) {
-        try {
-            String response = authService.loginUser(loginRequest);
-            return ResponseEntity.ok(response);
-        } catch (IllegalArgumentException ex) {
-            return ResponseEntity.status(401).body(ex.getMessage()); // 401 Unauthorized
-        }
+        String response = authService.loginUser(loginRequest);
+        return ResponseEntity.ok(response);
     }
 }
 

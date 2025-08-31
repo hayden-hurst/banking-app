@@ -3,75 +3,84 @@ package com.haydenhurst.bankingapp.auth.service;
 import com.haydenhurst.bankingapp.auth.dto.LoginRequest;
 import com.haydenhurst.bankingapp.auth.dto.SignupRequest;
 import com.haydenhurst.bankingapp.auth.exception.InvalidCredentialsException;
-import com.haydenhurst.bankingapp.config.JwtConfig;
+import com.haydenhurst.bankingapp.auth.exception.UserRegistrationException;
+import com.haydenhurst.bankingapp.security.JwtTokenProvider;
+import com.haydenhurst.bankingapp.user.model.User;
 import com.haydenhurst.bankingapp.user.repository.UserRepository;
-import io.jsonwebtoken.Jwts;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Date;
 import java.util.List;
 
 @Service
-public class AuthService {
-    private final JwtConfig jwtConfig;
+public class AuthService implements UserDetailsService {
+    private final JwtTokenProvider jwtTokenProvider;
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder passwordEncoder;
-    private final AuthenticationManager authenticationManager;
 
     @Autowired
     public AuthService(UserRepository userRepository,
                        BCryptPasswordEncoder passwordEncoder,
-                       AuthenticationManager authenticationManager,
-                       JwtConfig jwtConfig) {
+                       JwtTokenProvider jwtTokenProvider) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
-        this.authenticationManager = authenticationManager;
-        this.jwtConfig = jwtConfig;
+        this.jwtTokenProvider = jwtTokenProvider;
+    }
+
+    @Autowired
+    private ApplicationContext context;
+
+    @Override
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
     }
 
     public String registerUser(SignupRequest signupRequest) {
-        // first we want to check to make sure the user doesn't already exist with the same email, name, address, phonenumber, etc.
-        // then after we verify that this user doesn't already exist we create a new user with the provided info via SignupRequest dto
-        // the account will not be verified until they enter their Kyc information which will be used to verify they are who they say they are
-        // upon verification they will now be able to own a bank account and send/receive/transfer money.
-        return "";
+        if (userRepository.existsByEmail(signupRequest.getEmail())) {
+            throw new UserRegistrationException("User with this email already exists.");
+        }
+
+        if (userRepository.findByPhoneNumber(signupRequest.getPhoneNumber()).isPresent()) {
+            throw new UserRegistrationException("Phone number already in use");
+        }
+
+        User user = new User();
+        user.setEmail(signupRequest.getEmail());
+        user.setPassword(passwordEncoder.encode(signupRequest.getPassword()));
+        user.setFullName(signupRequest.getFullName());
+        user.setPhoneNumber(signupRequest.getPhoneNumber());
+        user.setAddress(signupRequest.getAddress());
+        user.setDOB(signupRequest.getDOB());
+
+        userRepository.save(user);
+
+        return "User registered successfully. Please complete KYC to activate account.";
     }
 
     public String loginUser(LoginRequest loginRequest) {
+        AuthenticationManager authenticationManager = context.getBean(AuthenticationManager.class);
+
         try {
-            // authenticationManager is the entry point for verifying credentials, it also handles bcrypt comparison automatically
-            Authentication auth = authenticationManager.authenticate(
+            Authentication authenticationRequest = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
                             loginRequest.getEmail(),
                             loginRequest.getPassword()
                     )
             );
 
-            UserDetails userDetails = (UserDetails) auth.getPrincipal();
-            List<String> roles = userDetails.getAuthorities()
-                    .stream()
-                    .map(GrantedAuthority::getAuthority)
-                    .toList();
-
-            // create token with Jwts builder
-            String token = Jwts.builder()
-                    .subject(userDetails.getUsername()) // email
-                    .claim("roles", roles)
-                    .issuedAt(new Date())
-                    .expiration(new Date(System.currentTimeMillis() + jwtConfig.getJwtExpiration())) // expiration from application.properties
-                    .signWith(jwtConfig.getSecretKey()) // secretKey from application.properties
-                    .compact();
-
-            return token;
-        } catch (BadCredentialsException e) {
+            return jwtTokenProvider.generateToken(authenticationRequest);
+        } catch (BadCredentialsException ex) {
             throw new InvalidCredentialsException();
         }
     }

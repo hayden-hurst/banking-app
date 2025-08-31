@@ -11,6 +11,7 @@ import java.util.Optional;
 // This interface will be used for writing database queries with Spring Data JPA
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
-    Optional<User> findByUsername(String email);
+    Optional<User> findByEmail(String email);
     Optional<User> findByPhoneNumber(String phoneNumber);
+    boolean existsByEmail(String email);
 }
