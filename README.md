@@ -25,6 +25,14 @@ A full-stack banking application built with **Spring Boot** and **PostgreSQL**, 
 
 ---
 
+---
+
+## Libraries / Dependencies
+
+- **jjwt** – for JWT token generation and validation
+
+---
+
 ## Installation & Setup
 
 Follow these steps to set up the project locally:
