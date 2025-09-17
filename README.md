@@ -1,6 +1,9 @@
 # Banking App
 
-Full-stack banking application designed to simulate real-world financial operations, including account management, KYC checks, and transaction tracking. Built with Java 17, Spring Boot, and PostgreSQL.
+---
+
+## Currently Working on
+- **KYC Verification** - Additional process on top of creating an account to verify the identity of the user. Will allow full utilization of their account and permitted app features.
 
 ---
 
