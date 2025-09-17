@@ -1,6 +1,6 @@
 # Banking App
 
-A full-stack banking application built with **Spring Boot** and **PostgreSQL**, featuring secure authentication, transaction management, and account tracking. This project showcases both backend development (RESTful APIs, database interactions, security) and frontend design/development, providing a seamless user experience.
+Full-stack banking application designed to simulate real-world financial operations, including account management, KYC checks, and transaction tracking. Built with Java 17, Spring Boot, and PostgreSQL.
 
 ---
 
@@ -20,7 +20,6 @@ A full-stack banking application built with **Spring Boot** and **PostgreSQL**, 
 - **Backend:** Java 17, Spring Boot, Spring Security
 - **Database:** PostgreSQL
 - **Build Tool:** Maven
-- **Version Control:** Git & GitHub
 - **Testing:** JUnit
 
 ---
