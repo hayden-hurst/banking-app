@@ -19,7 +19,7 @@
 
 ## Tech Stack
 
-- **Frontend:** Javascript, HTML, CSS
+- **Frontend:** Typescript, HTML, CSS
 - **Backend:** Java 17, Spring Boot, Spring Security
 - **Database:** PostgreSQL
 - **Build Tool:** Maven
