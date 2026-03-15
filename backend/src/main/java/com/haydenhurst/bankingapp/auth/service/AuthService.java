@@ -13,17 +13,11 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.security.core.userdetails.UserDetails;
-
-import java.util.Date;
-import java.util.List;
 
 @Service
-public class AuthService implements UserDetailsService {
+public class AuthService {
     private final JwtTokenProvider jwtTokenProvider;
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder passwordEncoder;
@@ -31,37 +25,31 @@ public class AuthService implements UserDetailsService {
     @Autowired
     public AuthService(UserRepository userRepository,
                        BCryptPasswordEncoder passwordEncoder,
-                       JwtTokenProvider jwtTokenProvider) {
+                       JwtTokenProvider jwtTokenProvider, ApplicationContext context) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtTokenProvider = jwtTokenProvider;
+        this.context = context;
     }
 
-    @Autowired
-    private ApplicationContext context;
-
-    @Override
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        return userRepository.findByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
-    }
+    private final ApplicationContext context;
 
     public String registerUser(SignupRequest signupRequest) {
-        if (userRepository.existsByEmail(signupRequest.getEmail())) {
+        if (userRepository.existsByEmail(signupRequest.email())) {
             throw new UserRegistrationException("User with this email already exists.");
         }
 
-        if (userRepository.findByPhoneNumber(signupRequest.getPhoneNumber()).isPresent()) {
+        if (userRepository.findByPhoneNumber(signupRequest.phoneNumber()).isPresent()) {
             throw new UserRegistrationException("Phone number already in use");
         }
 
         User user = new User();
-        user.setEmail(signupRequest.getEmail());
-        user.setPassword(passwordEncoder.encode(signupRequest.getPassword()));
-        user.setFullName(signupRequest.getFullName());
-        user.setPhoneNumber(signupRequest.getPhoneNumber());
-        user.setAddress(signupRequest.getAddress());
-        user.setDOB(signupRequest.getDOB());
+        user.setEmail(signupRequest.email());
+        user.setHashedPassword(passwordEncoder.encode(signupRequest.password()));
+        user.setFullName(signupRequest.fullName());
+        user.setPhoneNumber(signupRequest.phoneNumber());
+        user.setAddress(signupRequest.address());
+        user.setDOB(signupRequest.dob());
 
         userRepository.save(user);
 
@@ -74,8 +62,8 @@ public class AuthService implements UserDetailsService {
         try {
             Authentication authenticationRequest = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
-                            loginRequest.getEmail(),
-                            loginRequest.getPassword()
+                            loginRequest.email(),
+                            loginRequest.password()
                     )
             );
 

@@ -1,6 +1,7 @@
 package com.haydenhurst.bankingapp.security;
 
 import com.haydenhurst.bankingapp.auth.exception.JwtGenerationException;
+import com.haydenhurst.bankingapp.user.model.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
@@ -9,7 +10,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
-import com.haydenhurst.bankingapp.config.JwtConfig;
+import com.haydenhurst.bankingapp.security.config.JwtConfig;
 
 import javax.crypto.SecretKey;
 import java.util.Date;
@@ -34,9 +35,14 @@ public class JwtTokenProvider {
                     .map(GrantedAuthority::getAuthority)
                     .toList();
 
+            // currently direct casting
+            // however, if using another login method that returns a different UserDetails implementation we would need a safe check
+            User user = (User) userDetails;
+
+
             // create token with Jwts builder and return it
             return Jwts.builder()
-                    .subject(userDetails.getUsername()) // email
+                    .subject(user.getId().toString())
                     .claim("roles", roles)
                     .issuedAt(new Date())
                     .expiration(new Date(System.currentTimeMillis() + jwtConfig.getJwtExpiration())) // expiration from application.properties
@@ -70,19 +76,16 @@ public class JwtTokenProvider {
         }
     }
 
-    public String getUsernameFromToken(String token) {
-        return extractClaims(token).getSubject();
+    public Long getUserIdFromToken(String token) {
+        String subject = extractClaims(token).getSubject();
+        try{
+            return Long.parseLong(subject);
+        } catch (NumberFormatException ex) {
+            throw new IllegalArgumentException("Invalid user ID in token subject");
+        }
     }
 
     public Date getExpirationDateFromToken(String token) {
         return extractClaims(token).getExpiration();
-    }
-
-    public List<String> getRolesFromToken(String token) {
-        //
-        List<?> rawList = (List<?>) extractClaims(token).get("roles", List.class);
-        return rawList.stream()
-                .map(Object::toString) // make sure all elements are a string
-                .toList();
     }
 }

@@ -1,7 +1,9 @@
 package com.haydenhurst.bankingapp.user.model;
 
+import com.haydenhurst.bankingapp.bankaccount.model.BankAccount;
 import com.haydenhurst.bankingapp.common.enums.Role;
 import com.haydenhurst.bankingapp.common.enums.UserAccountStatus;
+import com.haydenhurst.bankingapp.common.util.MaskingUtil;
 import com.haydenhurst.bankingapp.kyc.model.Kyc;
 import jakarta.persistence.*;
 import org.springframework.security.core.GrantedAuthority;
@@ -10,10 +12,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Entity
@@ -31,18 +30,19 @@ public class User implements UserDetails {
     @Column(nullable = false, unique = true)
     private String email;
 
-    @Column(nullable = false)
-    private String password; // hashed with BCrypt
+    @Column(name = "password", nullable = false)
+    private String hashedPassword;
 
+    // we will have separate input fields for first, middle, and lastname that combine into this single fullName field for easy access...
     @Column(nullable = false)
-    private String fullName; // we will have separate input fields for first, middle, and lastname that combine into this single fullName field for easy access...
-    // this will be verified via kyc through some sort of id...
+    private String fullName; // verified through kyc
 
     @Column(nullable = false, unique = true)
     private String phoneNumber;
 
+    // date of birth
     @Column(nullable = false)
-    private LocalDate dob; // date of birth
+    private LocalDate dob;  // verified through kyc
 
     @Column(nullable = false)
     private String address;
@@ -57,8 +57,11 @@ public class User implements UserDetails {
     private UserAccountStatus status; // ACTIVE, SUSPENDED, CLOSED
 
         // Relations //
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private Kyc kyc; // 'know your customer' data
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    private Kyc kyc_profile; // 'know your customer' data
+
+    @OneToMany(mappedBy = "accountHolder")
+    private List<BankAccount> bankAccounts;
 
         // Security & Banking Features //
     @Column(nullable = false)
@@ -87,7 +90,6 @@ public class User implements UserDetails {
     @Enumerated(EnumType.STRING)
     private Set<Role> roles; // CUSTOMER, ADMIN, TELLER
 
-    @Column(nullable = true)
     private String passwordResetToken; // temp token for pass recovery (these will also be hashed before being stored on the database)
 
     // ==================================================
@@ -105,6 +107,8 @@ public class User implements UserDetails {
     // Get / Set
     // ==================================================
         // Essential User Info //
+    public Long getId() { return id; }
+
     public String getEmail() {
         return email;
     }
@@ -112,8 +116,7 @@ public class User implements UserDetails {
         this.email = email;
     }
 
-    public void setPassword(String hashedPassword) { this.password = hashedPassword; } // hashed in service layer
-
+    public void setHashedPassword(String hashedPassword) { this.hashedPassword = hashedPassword; } // hashed in auth service
 
     public String getFullName() { return fullName; }
     public void setFullName(String fullName) { this.fullName = fullName; }
@@ -155,11 +158,11 @@ public class User implements UserDetails {
     public String toString() {
         return "User{" +
                 "id=" + id +
-                ", email='" + email + '\'' +
-                ", fullName='" + fullName + '\'' +
-                ", phoneNumber='" + phoneNumber + '\'' +
+                ", email=" + MaskingUtil.maskEmail(email) +
+                ", fullName=" + fullName +
+                ", phoneNumber=" + MaskingUtil.maskPhoneNumber(phoneNumber) +
                 ", dob=" + dob +
-                ", address='" + address + '\'' +
+                ", address=" + address +
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
                 ", status=" + status +
@@ -180,17 +183,12 @@ public class User implements UserDetails {
 
     @Override
     public String getPassword() {
-        return password;
+        return hashedPassword;
     }
 
     @Override
     public String getUsername() {
         return email;
-    }
-
-    @Override
-    public boolean isAccountNonExpired() {
-        return true; // or your logic here
     }
 
     @Override

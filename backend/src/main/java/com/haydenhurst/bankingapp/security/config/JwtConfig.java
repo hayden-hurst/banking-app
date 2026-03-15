@@ -1,4 +1,4 @@
-package com.haydenhurst.bankingapp.config;
+package com.haydenhurst.bankingapp.security.config;
 
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;

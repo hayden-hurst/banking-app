@@ -1,6 +1,8 @@
 package com.haydenhurst.bankingapp.transaction.model;
 
 import com.haydenhurst.bankingapp.bankaccount.model.BankAccount;
+import com.haydenhurst.bankingapp.transaction.enums.TransactionStatus;
+import com.haydenhurst.bankingapp.transaction.enums.TransactionType;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -17,6 +19,9 @@ public class Transaction {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false, updatable = false)
+    private TransactionType type;
+
     @Column(nullable = false)
     private BigDecimal amount;
 
@@ -25,6 +30,9 @@ public class Transaction {
 
     @Column(nullable = false, updatable = false)
     private LocalDateTime timestamp;
+
+    @Column(nullable = false)
+    private TransactionStatus status;
 
     @ManyToOne // establish relation with BankAccount
     @JoinColumn(name = "account_id", nullable = false)
@@ -36,14 +44,15 @@ public class Transaction {
     public Transaction() {
     }
 
-    public Transaction(BankAccount bankAccount, BigDecimal amount, String description) {
+    public Transaction(BankAccount bankAccount, TransactionType type, BigDecimal amount, String description) {
         this.bankAccount = bankAccount;
+        this.type = type;
         this.amount = amount;
         this.description = description;
     }
 
     // ==================================================
-    // Gets ( once values are set there is no editing )
+    // Get / Set
     // ==================================================
     public Long getId() { return id; }
 
@@ -55,11 +64,18 @@ public class Transaction {
 
     public LocalDateTime getTimestamp() { return timestamp; }
 
+    public TransactionType getType() { return type; }
+
+    public TransactionStatus getStatus() { return status; }
+
+    public void updateStatus(TransactionStatus status) { this.status = status; }
+
     // ==================================================
     // Lifecycle Callback Methods
     // ==================================================
     @PrePersist
     public void onCreateTransaction() {
         timestamp = LocalDateTime.now();
+        status = TransactionStatus.PENDING;
     }
 }
