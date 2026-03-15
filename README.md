@@ -4,6 +4,9 @@ A full-stack banking application built with **Spring Boot** and **PostgreSQL**, 
 
 ---
 
+## Currently Working on
+- **KYC Verification** - Additional process on top of creating an account to verify the identity of the user. Will allow full utilization of their account and permitted app features.
+
 ## Base Features
 
 - **User Authentication** – Secure login, registration, and session management.  
