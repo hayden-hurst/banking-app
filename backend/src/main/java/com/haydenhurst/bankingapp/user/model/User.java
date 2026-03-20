@@ -58,7 +58,7 @@ public class User implements UserDetails {
 
         // Relations //
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
-    private Kyc kyc_profile; // 'know your customer' data
+    private Kyc kycProfile; // 'know your customer' data
 
     @OneToMany(mappedBy = "accountHolder")
     private List<BankAccount> bankAccounts;
@@ -177,7 +177,7 @@ public class User implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return roles.stream()
-                .map(role -> new SimpleGrantedAuthority(role.name()))
+                .map(role -> new SimpleGrantedAuthority("ROLE_" + role.name()))
                 .collect(Collectors.toSet());
     }
 

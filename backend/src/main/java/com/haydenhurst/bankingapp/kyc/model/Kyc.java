@@ -1,7 +1,6 @@
 package com.haydenhurst.bankingapp.kyc.model;
 
 import com.haydenhurst.bankingapp.common.enums.KycStatus;
-import com.haydenhurst.bankingapp.common.util.MaskingUtil;
 import com.haydenhurst.bankingapp.user.model.User;
 import jakarta.persistence.*;
 import java.time.LocalDate;
@@ -24,7 +23,7 @@ public class Kyc {
     private String documentType;
 
     @Column(nullable = false)
-    private String documentNumber;
+    private String documentNumberEncrypted;
 
     private LocalDate lastVerifiedOn;
 
@@ -36,7 +35,7 @@ public class Kyc {
 
         // Relations //
     @OneToOne
-    @JoinColumn(name="user_id", nullable = false)
+    @JoinColumn(name="user_id", nullable = false, unique = true)
     private User user;
 
     // ==================================================
@@ -44,13 +43,11 @@ public class Kyc {
     // ==================================================
     public Kyc() {}
 
-    public Kyc(User user, String ssnEncrypted, String documentType, String documentNumber) {
+    public Kyc(User user, String ssnEncrypted, String documentType, String documentNumberEncrypted) {
         this.user = user;
-
         this.ssnEncrypted = ssnEncrypted;
         this.documentType = documentType;
-        this.documentNumber = documentNumber;
-
+        this.documentNumberEncrypted = documentNumberEncrypted;
         this.status = KycStatus.UNVERIFIED;
         this.statusChangedOn = LocalDate.now();
     }
@@ -58,17 +55,22 @@ public class Kyc {
     // ==================================================
     // Get / Set
     // ==================================================
+    public Long getId() { return id; }
+
     public String getSsnEncrypted() { return ssnEncrypted; }
-    public void setSsnEncrypted(){ this.ssnEncrypted = ssnEncrypted; }
+    public void setSsnEncrypted(String ssnEncrypted){ this.ssnEncrypted = ssnEncrypted; }
 
     public String getDocumentType() { return documentType; }
     public void setDocumentType(String documentType) { this.documentType = documentType; }
 
-    public String getDocumentNumber(){ return documentNumber; }
-    public void setDocumentNumber(){ this.documentNumber = documentNumber; }
+    public String getDocumentNumberEncrypted() { return documentNumberEncrypted; }
+    public void setDocumentNumberEncrypted(String documentNumberEncrypted) { this.documentNumberEncrypted = documentNumberEncrypted; }
 
-    public KycStatus getKycStatus(){ return status; }
-    public void setKycStatus(KycStatus status){ this.status = status; }
+    public KycStatus getStatus(){ return status; }
+    public void setStatus(KycStatus status){ this.status = status; }
+
+    public User getUser() { return user; }
+    public void setUser(User user) { this.user = user; }
 
     public LocalDate getLastVerifiedOn(){ return lastVerifiedOn; }
     public void setLastVerifiedOn(LocalDate lastVerifiedOn){ this.lastVerifiedOn = lastVerifiedOn; }
@@ -85,27 +87,32 @@ public class Kyc {
         return "Kyc{" +
                 "id=" + id +
                 ", documentType=" + documentType +
-                ", documentNumber=" + MaskingUtil.maskAllButLastN(documentNumber, 4) +
                 ", lastVerifiedOn=" + lastVerifiedOn +
                 ", statusChangedOn=" + statusChangedOn +
                 ", status=" + status +
                 '}';
     }
 
-    protected void onVerified(){
+    // users who are already verified wont be able to create a new kyc request until they need to refresh
+    // use lastVerifiedOn date as a check before allowing a new request to be put in
+    // users with verified status will now have access to regular banking actions
+    public void onVerified(){
         status = KycStatus.VERIFIED;
         lastVerifiedOn = LocalDate.now();
         statusChangedOn = LocalDate.now();
     }
 
-    // maybe we could have the system verify kyc and then if info was verified
-    // the system it gets sent to a dashboard where it can be manually reviewed.
-    protected void onPendingReview(){
+    // admins will see a list of unverified kyc requests and when they click review the status will be set to pending
+    // and will be hidden from other admins so that they are all reviewing different profiles
+    // gets sent to a dashboard where it can be manually reviewed. (can be accepted or denied by admins)
+    public void onPendingReview(){
         status = KycStatus.PENDING_REVIEW;
         statusChangedOn = LocalDate.now();
     }
 
-    protected void onDenied(){
+    // make the user wait (maybe a few days or at least 24 hours) before submitting a request again to prevent flooding.
+    // the denied status will last that amount of time, and then they will be set back to UNVERFIED which will allow them to resubmit the profile
+    public void onDenied(){
         status = KycStatus.DENIED;
         statusChangedOn = LocalDate.now();
     }

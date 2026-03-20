@@ -2,6 +2,8 @@ package com.haydenhurst.bankingapp.user.controller;
 
 import com.haydenhurst.bankingapp.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -17,4 +19,9 @@ public class UserController {
         this.userService = userService;
     }
 
+    @GetMapping
+    public ResponseEntity<String> getCurrentUser() {
+        String response = String.valueOf(userService.getCurrentUser());
+        return ResponseEntity.ok(response);
+    }
 }
