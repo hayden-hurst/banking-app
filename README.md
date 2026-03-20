@@ -1,25 +1,44 @@
 # Banking App
 
-A full-stack banking application built with **Spring Boot** and **PostgreSQL**, featuring secure authentication, transaction management, and account tracking. This project showcases both backend development (RESTful APIs, database interactions, security) and frontend design/development, providing a seamless user experience.
+## Project Scope
+A full-stack banking application built with **Spring Boot** and **PostgreSQL**, featuring secure authentication, KYC verification, bank account creation & management, and transaction tracking. This project showcases both backend development with RESTful APIs, database interactions, security, encryption, and testing, as well as a frontend for a seamless user experience.
 
 ---
 
-## Currently Working on
-- **KYC Verification** - Additional process on top of creating an account to verify the identity of the user. Will allow full utilization of their account and permitted app features.
+## In-Progress Features
 
-## Base Features
+- **Bank Account Module** - Allow verified users to create bank accounts and perform transactions.
+- **Transaction History** – Log and retrieve past transactions.
+- **Frontend Application** - Build a user interface for authentication, KYC submission, and banking operations.
 
-- **User Authentication** – Secure login, registration, and session management.  
-- **Deposit & Withdrawal** – Allows users to perform basic banking transactions.  
-- **Transaction History** – Logs and retrieves past transactions.  
-- **PostgreSQL Integration** – Persistent data storage for user accounts and transactions.  
-- **RESTful API** – Clean and structured API endpoints for account operations.  
+---
+
+## Implemented Features
+
+- **User Authentication** – Secure registration and login with JWT-based authentication.
+- **KYC Verification Workflow** - Users can submit KYC information, view their status, and admins can review/approve/deny submissions.
+- **Sensitive Data Encryption** – Sensitive KYC fields are encrypted before being stored in the database.
+- **PostgreSQL Integration** – Persistent relational data storage using PostgreSQL.
+- **RESTful API Design** – Structured backend API endpoints for authentication and KYC workflows.
+- **Testing** – Unit tests and API integration tests for critical flows.
+
+---
+
+## Security Highlights
+
+- JWT-based authentication for protected API access
+- Spring Security role-based authorization
+- KYC verification workflow before access to banking operations
+- AES/GCM encryption for sensitive KYC data at rest
+- BCrypt password hashing for user credentials
+- DTO-based request/response boundaries to avoid exposing internal entities
+- Validation and centralized exception handling for safer API behavior
 
 ---
 
 ## Tech Stack
 
-- **Frontend:** TypeScript, HTML, CSS
+- **Frontend (in progress):** TypeScript, HTML, CSS
 - **Backend:** Java 17, Spring Boot, Spring Security, JWT
 - **Database:** PostgreSQL
 - **Build Tool:** Maven
@@ -32,25 +51,32 @@ A full-stack banking application built with **Spring Boot** and **PostgreSQL**, 
 
 Follow these steps to set up the project locally:
 
-### **1** Clone the Repository
+### [ **1** ] Clone the Repository
 ```sh
 git clone https://github.com/hayden-hurst/banking-app.git
 cd banking-app
 ```
 
-### **2** Configure the Application
+### [ **2** ] Configure the Application
 Edit the `src/main/resources/application.properties` file and set your PostgreSQL credentials:
+
 ```properties
 spring.datasource.url=jdbc:postgresql://localhost:5432/banking_app
 spring.datasource.username=your_username
 spring.datasource.password=your_password
 ```
+
 Make sure to also edit JWT secret (must be >= 32 chars):
 ```properties
 jwt.secret=superSecretKeyThatIsExactly32Chars!!
 ```
 
-### **3** Run the Application
+Make sure to also configure your encryption key for local development:
+```properties
+app.encryption.secret=yourBase64Encoded32ByteKeyHere
+```
+
+### [ **3** ] Run the Application
 ```sh
 mvn spring-boot:run
 ```
@@ -59,28 +85,44 @@ mvn spring-boot:run
 
 ## API Endpoints
 
-| Method | Endpoint                                                      | Description                                                    |
-|--------|---------------------------------------------------------------|----------------------------------------------------------------|
-| `POST` | `/api/auth/register`                                          | Register a new user                                            |
-| `POST` | `/api/auth/login`                                             | Authenticate and receive a token                               |
-| `POST` | `/api/kyc/verify`                                             | Verify "know your customer" (kyc) info                         |
-| `GET`  | `/api/kyc/status`                                             | Get kyc verification status                                    |
-| `POST` | `/api/bank-accounts`                                          | Create new bank account                                        |
-| `GET`  | `/api/bank-accounts`                                     | Get list of all bank accounts                                  |
-| `GET`  | `/api/bank-accounts/{accountId}`                              | Get details for a bank account                                 |
-| `POST` | `/api/bank-accounts/{accountId}/transactions`                 | Post a transaction to an account (deposit, withdraw, transfer) |
-| `GET`  | `/api/bank-accounts/{accountId}/transactions`            | Get list of all transactions from a bank account               |
-| `GET`  | `/api/bank-accounts/{accountId}/transactions/{transactionId}` | Get specific transaction from a bank account                   |
+### Authentication
+| Method | Endpoint                                                      | Description                    |
+|--------|---------------------------------------------------------------|--------------------------------|
+| `POST` | `/api/auth/register`                                          | Register a new user            |
+| `POST` | `/api/auth/login`                                             | Authenticate and receive a JWT |
+
+### KYC
+| Method | Endpoint                               | Description                                               |
+|--------|----------------------------------------|-----------------------------------------------------------|
+| `POST` | `/api/kyc`                             | Create a new KYC profile with initial status `UNVERIFIED` |
+| `GET`  | `/api/kyc`                             | Get the authenticated user's KYC profile                  |
+| `GET`  | `/api/kyc/status`                      | Get the authenticated user's KYC verification status      |
+| `GET`  | `/api/kyc/admin/{userId}`              | ADMIN only: Get KYC profile of specific user              |
+| `GET`  | `/api/kyc/admin?status=UNVERIFIED`     | ADMIN only: Get all profiles filtered by status           |
+| `POST` | `/api/kyc/admin/{userId}/start-review` | ADMIN only: Set status to `PENDING_REVIEW`                |
+| `POST` | `/api/kyc/admin/{userId}/approve`      | ADMIN only: Set status to `VERIFIED`                      | 
+| `POST` | `/api/kyc/admin/{userId}/deny`         | ADMIN only: Set status to `DENIED`                        |
+
+### In Progress - Bank Accounts & Transactions (Requires KYC status: `VERIFIED`)
+| Method | Endpoint                                                       | Description                                        |
+|--------|----------------------------------------------------------------|----------------------------------------------------|
+| `POST` | `/api/bank-accounts`                                           | Create a new bank account                          |
+| `GET`  | `/api/bank-accounts`                                           | Get all bank accounts for the authenticated user   |
+| `GET`  | `/api/bank-accounts/{accountId}`                               | Get details for a specific bank account            |
+| `POST` | `/api/bank-accounts/{accountId}/transactions`                  | Create a transaction (deposit, withdraw, transfer) |
+| `GET`  | `/api/bank-accounts/{accountId}/transactions`                  | Get all transactions for a bank account            |
+| `GET`  | `/api/bank-accounts/{accountId}/transactions/{transactionId}`  | Get details for a specific transaction             |
+
 ---
 
 ## Future Improvements
 
 - Add multi-factor authentication (MFA) for enhanced security.
-- Support for multiple currencies. (will use an api such as currency layer for accurate money conversions)
-- Add an admin dashboard for user management.
+- Support multiple currencies using a third-party exchange rate API (e.g., CurrencyLayer) for accurate conversions.
+- Add an admin dashboard for KYC review and user management.
 - IP tracking for fraud detection and for account protection (e.g., login from different location/ip must be approved before authorizing)
 - Device login detection (e.g., user must approve login on different device)
-- Implement NoSQL for caching, analytics, and personalization.
+- Introduce a NoSQL datastore (e.g., Redis for caching or MongoDB for analytics/personalization) to support performance and future product features.
 
 ---
 
