@@ -18,7 +18,7 @@ A full-stack banking application built with **Spring Boot** and **PostgreSQL**, 
 - **Bank Account Module** - Verified users can create bank accounts, retrieve all of their accounts, and view detailed information for a specific account.
 - **Sensitive Data Encryption** – Sensitive KYC fields are encrypted before being stored in the database.
 - **PostgreSQL Integration** – Persistent relational data storage using PostgreSQL.
-- **RESTful API Design** – Structured backend API endpoints for authentication and KYC workflows.
+- **RESTful API Design** – Structured backend API endpoints for authentication, KYC, and bank account workflows.
 - **Testing** – Unit tests and API integration tests for critical flows.
 
 ---
