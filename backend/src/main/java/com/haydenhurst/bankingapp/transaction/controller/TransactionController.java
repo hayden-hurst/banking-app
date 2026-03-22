@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 public class TransactionController {
     private final UserService userService;
     private final TransactionService transactionService;
-    private final BankAccountService bankAccountService;
+
 
     @Autowired
     public TransactionController(UserService userService, TransactionService transactionService, BankAccountService bankAccountService){
@@ -26,12 +26,11 @@ public class TransactionController {
         this.bankAccountService = bankAccountService;
     }
 
-    /*
     @PostMapping
-    public ResponseEntity<TransactionResponse> createTransaction(@Valid @RequestBody TransactionRequest request) {
+    public ResponseEntity<TransactionResponse> createTransaction(@PathVariable Long accountId, @Valid @RequestBody TransactionRequest request) {
         User currentUser = userService.getCurrentUser();
         TransactionResponse response = transactionService.createTransaction(currentUser.getId(), request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
-     */
+
 }

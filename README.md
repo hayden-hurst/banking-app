@@ -8,7 +8,7 @@ A full-stack banking application built with **Spring Boot** and **PostgreSQL**, 
 ## In-Progress Features
 
 - **Bank Account Module** - Allow verified users to create bank accounts and perform transactions.
-- **Transaction History** – Log and retrieve past transactions.
+- **Transaction Module** – Support deposits, withdrawals, transfers, and transaction history retrieval.
 - **Frontend Application** - Build a user interface for authentication, KYC submission, and banking operations.
 
 ---
@@ -17,6 +17,7 @@ A full-stack banking application built with **Spring Boot** and **PostgreSQL**, 
 
 - **User Authentication** – Secure registration and login with JWT-based authentication.
 - **KYC Verification Workflow** - Users can submit KYC information, view their status, and admins can review/approve/deny submissions.
+- **Bank Account Module** - Verified users can create bank accounts, retrieve all of their accounts, and view detailed information for a specific account.
 - **Sensitive Data Encryption** – Sensitive KYC fields are encrypted before being stored in the database.
 - **PostgreSQL Integration** – Persistent relational data storage using PostgreSQL.
 - **RESTful API Design** – Structured backend API endpoints for authentication and KYC workflows.
@@ -28,7 +29,8 @@ A full-stack banking application built with **Spring Boot** and **PostgreSQL**, 
 
 - JWT-based authentication for protected API access
 - Spring Security role-based authorization
-- KYC verification workflow before access to banking operations
+- KYC verification required before bank account or transaction api use
+- KYC admin endpoints restricted to users with the `ADMIN` role
 - AES/GCM encryption for sensitive KYC data at rest
 - BCrypt password hashing for user credentials
 - DTO-based request/response boundaries to avoid exposing internal entities
@@ -103,12 +105,16 @@ mvn spring-boot:run
 | `POST` | `/api/kyc/admin/{userId}/approve`      | ADMIN only: Set status to `VERIFIED`                      | 
 | `POST` | `/api/kyc/admin/{userId}/deny`         | ADMIN only: Set status to `DENIED`                        |
 
-### In Progress - Bank Accounts & Transactions (Requires KYC status: `VERIFIED`)
+### Bank Accounts (Requires KYC status: `VERIFIED`)
 | Method | Endpoint                                                       | Description                                        |
 |--------|----------------------------------------------------------------|----------------------------------------------------|
 | `POST` | `/api/bank-accounts`                                           | Create a new bank account                          |
 | `GET`  | `/api/bank-accounts`                                           | Get all bank accounts for the authenticated user   |
 | `GET`  | `/api/bank-accounts/{accountId}`                               | Get details for a specific bank account            |
+
+### In Progress - Transactions (Requires KYC status: `VERIFIED`)
+| Method | Endpoint                                                       | Description                                        |
+|--------|----------------------------------------------------------------|----------------------------------------------------|
 | `POST` | `/api/bank-accounts/{accountId}/transactions`                  | Create a transaction (deposit, withdraw, transfer) |
 | `GET`  | `/api/bank-accounts/{accountId}/transactions`                  | Get all transactions for a bank account            |
 | `GET`  | `/api/bank-accounts/{accountId}/transactions/{transactionId}`  | Get details for a specific transaction             |

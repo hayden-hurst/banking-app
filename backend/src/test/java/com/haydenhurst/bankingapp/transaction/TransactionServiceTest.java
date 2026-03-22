@@ -1,4 +1,4 @@
 package com.haydenhurst.bankingapp.transaction;
 
-public class TransactionServiceIT {
+public class TransactionServiceTest {
 }
