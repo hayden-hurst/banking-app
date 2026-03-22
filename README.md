@@ -26,7 +26,6 @@ A full-stack banking application built with **Spring Boot** and **PostgreSQL**, 
 ## Security Highlights
 
 - JWT-based authentication for protected API access
-- Spring Security role-based authorization
 - KYC verification required before bank account or transaction api use
 - KYC admin endpoints restricted to users with the `ADMIN` role
 - AES/GCM encryption for sensitive KYC data at rest
