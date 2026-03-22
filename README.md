@@ -6,8 +6,6 @@ A full-stack banking application built with **Spring Boot** and **PostgreSQL**, 
 ---
 
 ## In-Progress Features
-
-- **Bank Account Module** - Allow verified users to create bank accounts and perform transactions.
 - **Transaction Module** – Support deposits, withdrawals, transfers, and transaction history retrieval.
 - **Frontend Application** - Build a user interface for authentication, KYC submission, and banking operations.
 
