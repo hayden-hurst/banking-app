@@ -31,6 +31,7 @@ public class KycController {
     // USER ENDPOINTS
     // ==================================================
 
+    // TODO: Require a digital signature from the user for their KYC profile creation
     // allows user to create a new profile
     // on submit = UNVERIFIED status
     @PostMapping
@@ -80,6 +81,8 @@ public class KycController {
         KycResponse response = kycService.startReview(userId);
         return ResponseEntity.ok(response);
     }
+
+    // TODO: Tie the admin that reviewed and verified the KYC profile of a user to that KYC, and also require them to sign their name digitally.
 
     // admin approves = VERIFIED status
     @PreAuthorize("hasRole('ADMIN')")

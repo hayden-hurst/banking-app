@@ -63,7 +63,11 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "accountHolder")
     private List<BankAccount> bankAccounts;
 
-        // Security & Banking Features //
+    /* Should make separate schema called credit profile which would store credit rating, etc. and tie to the user
+    @Column(nullable = false)
+    private BigDecimal creditRating;
+    */
+    // Security & Banking Features //
     @Column(nullable = false)
     private boolean accountNonLocked; // prevents login if account is locked
 
