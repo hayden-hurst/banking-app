@@ -109,7 +109,7 @@ mvn spring-boot:run
 | `GET`  | `/api/bank-accounts`                 | Get all bank accounts for the authenticated user   |
 | `GET`  | `/api/bank-accounts/{accountNumber}` | Get details for a specific bank account            |
 
-### In Progress - Transactions (Requires KYC status: `VERIFIED`)
+### Transactions (Requires KYC status: `VERIFIED`)
 | Method | Endpoint                                                       | Description                                        |
 |--------|----------------------------------------------------------------|----------------------------------------------------|
 | `POST` | `/api/bank-accounts/{accountNumber}/transactions`                  | Create a transaction (deposit, withdraw, transfer) |
