@@ -195,19 +195,25 @@ public class BankAccountServiceTest {
     @Test
     void getBankAccountDetails_returnsMappedResponse() {
         Long holderId = 1L;
-        Long accountId = 10L;
+        String accountNumber = "12345678901234567890";
 
-        BankAccount bankAccount = buildBankAccount(holderId, "12345678901234567890", "Daily Use", BankAccountType.CHECKING, BigDecimal.valueOf(2500.00));
-        setField(bankAccount, "id", accountId);
+        BankAccount bankAccount = buildBankAccount(
+                holderId,
+                accountNumber,
+                "Daily Use",
+                BankAccountType.CHECKING,
+                BigDecimal.valueOf(2500.00)
+        );
+        setField(bankAccount, "id", 10L);
 
-        when(bankAccountRepository.findByAccountHolderIdAndId(holderId, accountId))
+        when(bankAccountRepository.findByAccountNumberAndAccountHolderId(accountNumber, holderId))
                 .thenReturn(Optional.of(bankAccount));
 
-        BankAccountDetailsResponse response = bankAccountService.getBankAccountDetails(holderId, accountId);
+        BankAccountDetailsResponse response = bankAccountService.getBankAccountDetails(holderId, accountNumber);
 
         assertNotNull(response);
-        assertEquals(accountId, response.id());
-        assertEquals("12345678901234567890", response.accountNumber());
+        assertEquals(10L, response.id());
+        assertEquals(accountNumber, response.accountNumber());
         assertEquals("Daily Use", response.accountNickname());
         assertEquals(BankAccountType.CHECKING, response.type());
         assertEquals(BigDecimal.valueOf(2500.00), response.balance());
@@ -217,14 +223,14 @@ public class BankAccountServiceTest {
     @Test
     void getBankAccountDetails_throwsWhenAccountNotFound() {
         Long holderId = 1L;
-        Long accountId = 99L;
+        String accountNumber = "99999999999999999999";
 
-        when(bankAccountRepository.findByAccountHolderIdAndId(holderId, accountId))
+        when(bankAccountRepository.findByAccountNumberAndAccountHolderId(accountNumber, holderId))
                 .thenReturn(Optional.empty());
 
         ResourceNotFoundException ex = assertThrows(
                 ResourceNotFoundException.class,
-                () -> bankAccountService.getBankAccountDetails(holderId, accountId)
+                () -> bankAccountService.getBankAccountDetails(holderId, accountNumber)
         );
 
         assertEquals("Bank account not found", ex.getMessage());

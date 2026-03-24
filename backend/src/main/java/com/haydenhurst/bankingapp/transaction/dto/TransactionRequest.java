@@ -1,11 +1,12 @@
 package com.haydenhurst.bankingapp.transaction.dto;
 
-import com.haydenhurst.bankingapp.transaction.enums.TransactionType;
+import com.haydenhurst.bankingapp.transaction.enums.TransactionRequestType;
 
 import java.math.BigDecimal;
 
 public record TransactionRequest (
         BigDecimal amount,
-        TransactionType type,
-        String description
+        TransactionRequestType type,
+        String description,
+        String destinationAccountNumber
 ){}

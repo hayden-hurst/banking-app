@@ -119,11 +119,11 @@ class BankAccountControllerIT {
                 .header("Authorization", "Bearer " + ctx.token())
                 .contentType(ContentType.JSON)
                 .body("""
-                        {
-                          "accountNickname": "Daily Spending",
-                          "bankAccountType": "CHECKING"
-                        }
-                        """)
+                    {
+                      "accountNickname": "Daily Spending",
+                      "bankAccountType": "CHECKING"
+                    }
+                    """)
                 .when()
                 .post("/api/bank-accounts")
                 .then()
@@ -131,16 +131,16 @@ class BankAccountControllerIT {
                 .extract()
                 .response();
 
-        Long accountId = createResponse.jsonPath().getLong("id");
+        String accountNumber = createResponse.jsonPath().getString("accountNumber");
 
         given()
                 .port(port)
                 .header("Authorization", "Bearer " + ctx.token())
                 .when()
-                .get("/api/bank-accounts/{accountId}", accountId)
+                .get("/api/bank-accounts/{accountNumber}", accountNumber)
                 .then()
                 .statusCode(200)
-                .body("id", equalTo(accountId.intValue()))
+                .body("accountNumber", equalTo(accountNumber))
                 .body("accountNickname", equalTo("Daily Spending"))
                 .body("type", equalTo("CHECKING"))
                 .body("status", equalTo("ACTIVE"))

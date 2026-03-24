@@ -19,6 +19,11 @@ public class Transaction {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+
+
+    @Column(length = 20)
+    private String destinationNumber;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, updatable = false)
     private TransactionType type;
@@ -44,9 +49,11 @@ public class Transaction {
     // Constructors
     // ==================================================
     public Transaction() {
+        this.status = TransactionStatus.PENDING;
     }
 
     public Transaction(BankAccount bankAccount, TransactionType type, BigDecimal amount, String description) {
+        this();
         this.bankAccount = bankAccount;
         this.type = type;
         this.amount = amount;
@@ -57,6 +64,10 @@ public class Transaction {
     // Get / Set
     // ==================================================
     public Long getId() { return id; }
+
+    public String getDestinationNumber() { return destinationNumber; }
+
+    public void setDestinationNumber(String destinationNumber) { this.destinationNumber = destinationNumber; }
 
     public BankAccount getBankAccount() { return bankAccount; }
 
@@ -78,6 +89,5 @@ public class Transaction {
     @PrePersist
     public void onCreateTransaction() {
         timestamp = LocalDateTime.now();
-        status = TransactionStatus.PENDING;
     }
 }

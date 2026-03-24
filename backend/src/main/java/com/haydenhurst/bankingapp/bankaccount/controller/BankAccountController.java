@@ -42,10 +42,10 @@ public class BankAccountController {
 
     // put some filters in here so that you can view different details about an account
     // e.g. /api/bank-accounts/{accountId}?=
-    @GetMapping("/{accountId}")
-    public ResponseEntity<BankAccountDetailsResponse> getBankAccountDetails(@PathVariable Long accountId){
+    @GetMapping("/{accountNumber}")
+    public ResponseEntity<BankAccountDetailsResponse> getBankAccountDetails(@PathVariable String accountNumber){
         User currentUser = userService.getCurrentUser();
-        BankAccountDetailsResponse response = bankAccountService.getBankAccountDetails(currentUser.getId(), accountId);
+        BankAccountDetailsResponse response = bankAccountService.getBankAccountDetails(currentUser.getId(), accountNumber);
         return ResponseEntity.ok(response);
     }
 }

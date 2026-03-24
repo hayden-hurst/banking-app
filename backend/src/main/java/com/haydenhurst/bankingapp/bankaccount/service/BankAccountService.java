@@ -11,7 +11,6 @@ import com.haydenhurst.bankingapp.kyc.model.Kyc;
 import com.haydenhurst.bankingapp.kyc.repository.KycRepository;
 import com.haydenhurst.bankingapp.user.model.User;
 import com.haydenhurst.bankingapp.user.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
@@ -74,8 +73,8 @@ public class BankAccountService {
                 .toList();
     }
 
-    public BankAccountDetailsResponse getBankAccountDetails(Long holderId, Long accountId){
-        BankAccount bankAccount = bankAccountRepository.findByAccountHolderIdAndId(holderId, accountId)
+    public BankAccountDetailsResponse getBankAccountDetails(Long holderId, String accountNumber){
+        BankAccount bankAccount = bankAccountRepository.findByAccountNumberAndAccountHolderId(accountNumber, holderId)
                 .orElseThrow(() -> new ResourceNotFoundException("Bank account not found"));
 
         return mapToDetailsResponse(bankAccount);

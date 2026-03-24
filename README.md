@@ -6,7 +6,6 @@ A full-stack banking application built with **Spring Boot** and **PostgreSQL**, 
 ---
 
 ## In-Progress Features
-- **Transaction Module** – Support deposits, withdrawals, transfers, and transaction history retrieval.
 - **Frontend Application** - Build a user interface for authentication, KYC submission, and banking operations.
 
 ---
@@ -16,6 +15,7 @@ A full-stack banking application built with **Spring Boot** and **PostgreSQL**, 
 - **User Authentication** – Secure registration and login with JWT-based authentication.
 - **KYC Verification Workflow** - Users can submit KYC information, view their status, and admins can review/approve/deny submissions.
 - **Bank Account Module** - Verified users can create bank accounts, retrieve all of their accounts, and view detailed information for a specific account.
+- **Transaction Module** – Support deposits, withdrawals, transfers, and transaction history retrieval.
 - **Sensitive Data Encryption** – Sensitive KYC fields are encrypted before being stored in the database.
 - **PostgreSQL Integration** – Persistent relational data storage using PostgreSQL.
 - **RESTful API Design** – Structured backend API endpoints for authentication, KYC, and bank account workflows.
@@ -103,18 +103,18 @@ mvn spring-boot:run
 | `POST` | `/api/kyc/admin/{userId}/deny`         | ADMIN only: Set status to `DENIED`                        |
 
 ### Bank Accounts (Requires KYC status: `VERIFIED`)
-| Method | Endpoint                                                       | Description                                        |
-|--------|----------------------------------------------------------------|----------------------------------------------------|
-| `POST` | `/api/bank-accounts`                                           | Create a new bank account                          |
-| `GET`  | `/api/bank-accounts`                                           | Get all bank accounts for the authenticated user   |
-| `GET`  | `/api/bank-accounts/{accountId}`                               | Get details for a specific bank account            |
+| Method | Endpoint                             | Description                                        |
+|--------|--------------------------------------|----------------------------------------------------|
+| `POST` | `/api/bank-accounts`                 | Create a new bank account                          |
+| `GET`  | `/api/bank-accounts`                 | Get all bank accounts for the authenticated user   |
+| `GET`  | `/api/bank-accounts/{accountNumber}` | Get details for a specific bank account            |
 
 ### In Progress - Transactions (Requires KYC status: `VERIFIED`)
 | Method | Endpoint                                                       | Description                                        |
 |--------|----------------------------------------------------------------|----------------------------------------------------|
-| `POST` | `/api/bank-accounts/{accountId}/transactions`                  | Create a transaction (deposit, withdraw, transfer) |
-| `GET`  | `/api/bank-accounts/{accountId}/transactions`                  | Get all transactions for a bank account            |
-| `GET`  | `/api/bank-accounts/{accountId}/transactions/{transactionId}`  | Get details for a specific transaction             |
+| `POST` | `/api/bank-accounts/{accountNumber}/transactions`                  | Create a transaction (deposit, withdraw, transfer) |
+| `GET`  | `/api/bank-accounts/{accountNumber}/transactions`                  | Get all transactions for a bank account            |
+| `GET`  | `/api/bank-accounts/{accountNumber}/transactions/{transactionId}`  | Get details for a specific transaction             |
 
 ---
 
