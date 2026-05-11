@@ -43,5 +43,5 @@ build/
 # VS Code
 .vscode/
 
-# backend vars
+# environment vars
 *.env
