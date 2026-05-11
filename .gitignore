@@ -44,4 +44,4 @@ build/
 .vscode/
 
 # backend vars
-src/main/resources/backend.env
+*.env
