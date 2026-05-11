@@ -17,7 +17,7 @@
 hs_err_pid*
 replay_pid*
 
-# Maven Wrapper (only keeping necessary files)
+# Maven Wrapper
 !backend/.mvn/wrapper/maven-wrapper.jar
 backend/.mvn/wrapper/
 backend/mvnw
@@ -33,15 +33,15 @@ build/
 *.iml
 *.ipr
 
-# Spring Tool Suite (STS) [Removed if you don’t use STS]
+# Spring Tool Suite (STS)
 .apt_generated
 .classpath
 .factorypath
 .project
 .settings/
 
-# VS Code [Remove if not needed]
+# VS Code
 .vscode/
 
 # backend vars
-src/main/resources/application.properties
+src/main/resources/backend.env
