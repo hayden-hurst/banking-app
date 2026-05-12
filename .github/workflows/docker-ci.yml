@@ -28,6 +28,7 @@ jobs:
       # 3. Build Spring Boot jar
       - name: Build with Maven
         run: mvn clean package -DskipTests
+        working-directory: backend
 
       # 4. Generate short commit SHA tag
       - name: Generate image tag
@@ -43,7 +44,7 @@ jobs:
           docker build \
           -t ghcr.io/${{ secrets.GHCR_USERNAME }}/banking-backend:latest \
           -t ghcr.io/${{ secrets.GHCR_USERNAME }}/banking-backend:${{ env.IMAGE_TAG }} \
-          .
+          backend/
 
       # 7. Push Docker image tags
       - name: Push Docker images
