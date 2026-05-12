@@ -1,0 +1,52 @@
+name: Build & Push Docker Image
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      # 1. Checkout repository
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # 2. Set up Java 17
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      # 3. Build Spring Boot jar
+      - name: Build with Maven
+        run: mvn clean package -DskipTests
+
+      # 4. Generate short commit SHA tag
+      - name: Generate image tag
+        run: echo "IMAGE_TAG=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+
+      # 5. Log into GitHub Container Registry
+      - name: Login to GHCR
+        run: echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io -u ${{ secrets.GHCR_USERNAME }} --password-stdin
+
+      # 6. Build Docker image
+      - name: Build Docker image
+        run: |
+          docker build \
+          -t ghcr.io/${{ secrets.GHCR_USERNAME }}/banking-backend:latest \
+          -t ghcr.io/${{ secrets.GHCR_USERNAME }}/banking-backend:${{ env.IMAGE_TAG }} \
+          .
+
+      # 7. Push Docker image tags
+      - name: Push Docker images
+        run: |
+          docker push ghcr.io/${{ secrets.GHCR_USERNAME }}/banking-backend:latest
+          docker push ghcr.io/${{ secrets.GHCR_USERNAME }}/banking-backend:${{ env.IMAGE_TAG }}
