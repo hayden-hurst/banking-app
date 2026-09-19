@@ -1,4 +1,5 @@
 # Banking App
+![Build Status](https://github.com)
 
 ## Project Scope
 A full-stack banking application built with **Spring Boot** and **PostgreSQL**, featuring secure authentication, KYC verification, bank account creation & management, and transaction tracking. This project showcases both backend development with RESTful APIs, database interactions, security, encryption, and testing, as well as a frontend for a seamless user experience.
@@ -120,6 +121,9 @@ mvn spring-boot:run
 
 ## Future Improvements
 
+- Integrate RabbitMQ to offload heavy background tasks, preventing API downtime during high-traffic spikes.
+- Add a lightweight Go service to consume queue events, handling file parsing and logging with a minimal memory footprint.
+- Log unchangeable financial events to disk to build reliable transaction history and system rollbacks.
 - Add multi-factor authentication (MFA) for enhanced security.
 - Support multiple currencies using a third-party exchange rate API (e.g., CurrencyLayer) for accurate conversions.
 - Add an admin dashboard for KYC review and user management.
