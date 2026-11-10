@@ -39,8 +39,9 @@ A full-stack banking application built with **Spring Boot** and **PostgreSQL**, 
 
 - **Frontend (in progress):** TypeScript, HTML, CSS
 - **Backend:** Java 17, Spring Boot, Spring Security, JWT
-- **Database:** PostgreSQL
+- **Database:** PostgreSQL with Flyway migrations
 - **Build Tool:** Maven
+- **Containerization:** Docker and Docker Compose
 - **Version Control:** Git & GitHub
 - **Testing:** Unit Testing (JUnit with Mockito) & API Integration Testing (RestAssured)
 
@@ -48,37 +49,73 @@ A full-stack banking application built with **Spring Boot** and **PostgreSQL**, 
 
 ## Installation & Setup
 
-Follow these steps to set up the project locally:
+### What Docker Does Here
 
-### [ **1** ] Clone the Repository
-```sh
+A **Dockerfile** gives instructions for building an image, which packages the application and its runtime. A **container** is a running instance of that image. **Docker Compose** starts the containers together using a configuration file. This makes the application environment more consistent between computers. [Docker Compose introduction](https://docs.docker.com/get-started/docker-concepts/the-basics/what-is-docker-compose/)
+
+This project uses two containers. One runs the Java backend, and the other runs PostgreSQL. The files that control them are `backend/Dockerfile` and `backend/docker-compose.yml`.
+
+### Start the Backend Locally
+
+Install Java 17, Maven, Docker with the Compose plugin, and Git. Run these commands in a terminal.
+
+```bash
 git clone https://github.com/hayden-hurst/banking-app.git
-cd banking-app
+cd banking-app/backend
 ```
 
-### [ **2** ] Configure the Application
-Edit the `src/main/resources/application.properties` file and set your PostgreSQL credentials:
+Before starting, open `docker-compose.yml` and put double quotes around the existing development encryption key.
 
-```properties
-spring.datasource.url=jdbc:postgresql://localhost:5432/banking_app
-spring.datasource.username=your_username
-spring.datasource.password=your_password
+```yaml
+APP_ENCRYPTION_SECRET: "12345678901234567890123456789012"
 ```
 
-Make sure to also edit JWT secret (must be >= 32 chars):
-```properties
-jwt.secret=superSecretKeyThatIsExactly32Chars!!
+This is a small setup exercise. YAML is the configuration format Compose reads. Quotes tell it to keep this value as text. Without quotes, Compose can interpret the digits as a number and change the value. That breaks encryption because the application needs a key of the correct length. This public example key is only for local practice with fake data.
+
+Now build the Java application and start the containers.
+
+```bash
+mvn clean package -DskipTests
+docker compose up --build -d
+docker compose ps
+docker compose logs --tail=100 backend
 ```
 
-Make sure to also configure your encryption key for local development:
-```properties
-app.encryption.secret=yourBase64Encoded32ByteKeyHere
-```
+Maven creates the runnable Java package, called a **JAR**. The Dockerfile copies that JAR into the backend image. `--build` builds the image, `-d` keeps the containers running in the background, `ps` shows their status, and `logs` shows application messages. `-DskipTests` skips running tests for this local setup command.
 
-### [ **3** ] Run the Application
-```sh
-mvn spring-boot:run
-```
+The backend is available at `http://localhost:8081`. PostgreSQL is available on your computer at port `5433`. Inside the containers, the backend reaches PostgreSQL through the service name `db` on port `5432`. Compose waits until PostgreSQL can accept connections before starting the backend.
+
+Use `docker compose stop` to stop the containers. After Java code changes, run the build and start commands again. The current database storage needs improvement before keeping important data, so use fake records you can recreate. The current Compose configuration also publishes ports beyond your computer's loopback address. Keep this setup on a trusted local network until we work through restricting access.
+
+## Flyway Database Migrations
+
+A **database migration** is a saved, numbered change to the database structure, such as creating a table or adding a column. Saving these changes with the code helps different copies of the application build the same database structure.
+
+Flyway runs the SQL files in `backend/src/main/resources/db/migration/` when the backend starts. The first file, `V1__initial_schema.sql`, creates the application's tables in an empty database. Flyway records completed migrations in a table called `flyway_schema_history` so it can track what has already run. [Flyway migration guide](https://documentation.red-gate.com/flyway/flyway-concepts/migrations/versioned-migrations)
+
+For a later database change, add a new file such as `V2__add_account_index.sql`. Keep migrations that have already been applied unchanged. This preserves the history shared by existing databases. If startup reports that tables already exist but there is no Flyway history, keep any data you need and investigate before changing the database.
+
+Spring profiles are groups of settings. Compose selects the `dev` profile for development. It currently lets Hibernate, the tool that maps Java objects to database tables, change tables automatically. The `prod` profile instead checks that the tables match the Java code after Flyway runs. We should eventually use this checking behavior during development too, so missing migrations are caught earlier.
+
+## Current Deployment Setup
+
+**Deployment** means putting the application onto the machine where it will run. The GitHub Actions file at `.github/workflows/docker-ci.yml` already builds and uploads a backend image when code is pushed to `main`.
+
+It uploads the image to GitHub Container Registry, a place to store container images, under `ghcr.io/hayden-hurst/banking-backend`. It labels the image with `latest` and a short Git commit ID so a build can be connected to its source code. The workflow currently skips running tests. Starting the application on a server is still a manual step.
+
+The production settings read database credentials and encryption keys from **environment variables**, which are values supplied to the running application. These are `DB_URL`, `DB_USERNAME`, `DB_PASSWORD`, `AES_SECRET`, `JWT_SECRET`, and `JWT_EXPIRATION`. Selecting `SPRING_PROFILES_ACTIVE=prod` activates those settings. A production environment also needs decisions about network access, encrypted connections, and backups.
+
+## Improvements to Learn One at a Time
+
+These are proposed exercises. Each should include an explanation, a small change, and a check that the change works.
+
+1. **Run tests before uploading an image.** A successful build shows that the application can be packaged. Tests check specific behavior. We also need to configure Maven to run the existing integration tests, which check how parts of the application work together. Start with the GitHub Actions introduction, then the Maven integration test guide. [GitHub Actions basics](https://docs.github.com/en/actions/get-started/understand-github-actions) · [Maven Failsafe](https://maven.apache.org/surefire/maven-failsafe-plugin/)
+2. **Protect keys and passwords.** A secret committed to Git can remain in its history. Learn how to supply real secrets separately from code and replace exposed secrets. Keep the AES key available when restoring encrypted KYC records, since the records need that key to be read again.
+3. **Practice saving and restoring the database.** A Docker volume gives a container a separate place to store data. A backup provides a recoverable copy. Learn both before keeping important data, then prove that a backup can be restored.
+
+## Security Learning Lab — Planned
+
+The long-term goal is to use this project to practice finding security weaknesses, explaining their impact, and fixing them. Planned exercises cover the application, its host computer and network, and physical access to devices and backups. The lab plan and a format for documenting findings are in the security learning guide. [Security learning guide](docs/security/README.md)
 
 ---
 
