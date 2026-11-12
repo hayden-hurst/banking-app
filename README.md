@@ -1,4 +1,5 @@
 # Banking App
+[![Dev build and tests](https://github.com/hayden-hurst/banking-app/actions/workflows/docker-ci.yml/badge.svg?branch=dev)](https://github.com/hayden-hurst/banking-app/actions/workflows/docker-ci.yml?query=branch%3Adev)
 
 ## Project Scope
 A full-stack banking application built with **Spring Boot** and **PostgreSQL**, featuring secure authentication, KYC verification, bank account creation & management, and transaction tracking. This project showcases both backend development with RESTful APIs, database interactions, security, encryption, and testing, as well as a frontend for a seamless user experience.

@@ -40,7 +40,7 @@ jobs:
 
       # 3. Tests and build Spring Boot jar
       - name: Test and build with Maven
-        run: mvn clean package "-Dtest='Test,*Tests,*IT"
+        run: mvn clean package "-Dtest=*Test,*IT"
         working-directory: backend
         env:
           SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/postgres
